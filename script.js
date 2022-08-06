@@ -1,24 +1,19 @@
 // Variables
 var currentDay = moment(); // moment variable for day display
 var currentHour = moment().format("k"); // current hour in military time
-var hourlyTask = {
-    hour: 22,
-    task: "Sleep"
-}; // object template to store an hourly task. hour stored in military time. name convention is kk-task where k is the military time.
-
-
 
 // Element selectors
 var currentDayEl = $("#currentDay");
-
-
 
 // Functions
 
 // Build out time blocks. Set labels to each hour. Apply past, present, future classes based on time comparison. Add a textarea to each timeblock. Fill textarea with any data from local storage for that hour. Add save button. Add event listener to each save button to save that textarea to localstorage.
 
 function buildTimeBlocks() {
-
+    // i = 9 is 9am in military time. 18 is 6pm in military time. 9am-5pm working hours
+    for (i = 9; i < 18; i++) {
+        createTimeBlockRow(i);
+    }
 }
 
 
@@ -60,8 +55,6 @@ function createTimeBlockRow(kTime) {
     saveBtnEl.on("click", saveTask);
 }
 
-
-
 // Display today's date in the currentDayEl
 
 function displayCalendarDate() {
@@ -79,7 +72,7 @@ function retrieveTask(kTime) {
     return taskText;
 }
 
-// Save function task to local storage for a given kk time.
+// Save function task to local storage for a given k time.
 
 function saveTask(event) {
     var parentRowEl = $(event.target).parents(".row");
@@ -88,16 +81,8 @@ function saveTask(event) {
     localStorage.setItem(kTime + "-task", JSON.stringify(taskText));
 }
 
-
-
-
-
-
-
-
-
 // Main body
 displayCalendarDate();
-createTimeBlockRow(19);
+buildTimeBlocks();
 
 
