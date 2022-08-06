@@ -1,15 +1,15 @@
 // Variables
-var currentDay = moment() ; // moment variable for day display
-var currentHour = moment().format("k") ; // current hour in military time
+var currentDay = moment(); // moment variable for day display
+var currentHour = moment().format("k"); // current hour in military time
 var hourlyTask = {
     hour: 22,
-    task:"Sleep"
+    task: "Sleep"
 }; // object template to store an hourly task. hour stored in military time. name convention is kk-task where k is the military time.
 
 
 
 // Element selectors
-var currentDayEl = $("#currentDay") ;
+var currentDayEl = $("#currentDay");
 
 
 
@@ -17,31 +17,75 @@ var currentDayEl = $("#currentDay") ;
 
 // Build out time blocks. Set labels to each hour. Apply past, present, future classes based on time comparison. Add a textarea to each timeblock. Fill textarea with any data from local storage for that hour. Add save button. Add event listener to each save button to save that textarea to localstorage.
 
+function buildTimeBlocks() {
 
+}
+
+
+// Create a time block row and append it to the container
+
+function createTimeBlockRow(kTime) {
+    // Elements to be added
+    var containerEl = $(".container");
+    containerEl.append("<div class='row'></div>");
+    var rowEl = $(".row").last();
+    rowEl.append("<div class= 'hour'></div>");
+    var hourEl = rowEl.children(".hour");
+    rowEl.append("<div class='time-block'></div>");
+    var timeBlockEl = rowEl.children(".time-block");
+    timeBlockEl.append("<textarea></textarea>") ;
+    var textAreaEl = timeBlockEl.children("textarea");
+    rowEl.append("<button class= 'saveBtn'><i class='bi bi-save'></i></button>");
+    var saveBtnEl = rowEl.children(".saveBtn");
+    
+
+    // Setting the label for the hour class item and storing the k time in a data-attribute in the row
+    hourEl.text(moment(kTime, "k").format("hA"));
+    rowEl.attr("data-kHour", kTime);
+
+    // Setting the class of the time block based on current hour
+
+    if (currentHour == kTime) {
+        timeBlockEl.addClass("present");
+    } else if (currentHour > kTime) {
+        timeBlockEl.addClass("past");
+    } else {
+        timeBlockEl.addClass("future");
+    }
+
+    // Set textarea text to local storage value
+    textAreaEl.text(retrieveTask(kTime));
+
+    // Add event listener to save button
+    saveBtnEl.on("click", saveTask);
+}
 
 
 
 // Display today's date in the currentDayEl
 
 function displayCalendarDate() {
-    currentDayEl.text(currentDay.format("dddd, MMMM Do, YYYY")) ;
+    currentDayEl.text(currentDay.format("dddd, MMMM Do, YYYY"));
 }
 
 // Retrieve task from local storage for a given k time
 
 function retrieveTask(kTime) {
     var storedTask = JSON.parse(localStorage.getItem(kTime + "-task"));
-    var taskText = "" ;
+    var taskText = "";
     if (storedTask !== null) {
-       taskText = storedTask;
+        taskText = storedTask;
     }
-    return taskText ;
+    return taskText;
 }
 
-// Save task to local storage for a given kk time.
+// Save function task to local storage for a given kk time.
 
-function saveTask(kTime, taskObject) {
-    localStorage.setItem(kTime + "-task", JSON.stringify(taskObject)) ;
+function saveTask(event) {
+    var parentRowEl = $(event.target).parents(".row");
+    var kTime = parentRowEl.attr("data-kHour");
+    var taskText = parentRowEl.find("textarea").val();
+    localStorage.setItem(kTime + "-task", JSON.stringify(taskText));
 }
 
 
@@ -53,6 +97,7 @@ function saveTask(kTime, taskObject) {
 
 
 // Main body
-displayCalendarDate() ;
+displayCalendarDate();
+createTimeBlockRow(19);
 
 
